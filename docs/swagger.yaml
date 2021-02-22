@@ -1,0 +1,517 @@
+definitions:
+  models.Branch:
+    properties:
+      branch_meal_plans:
+        items:
+          $ref: '#/definitions/models.MealPlan'
+        type: array
+      branch_name:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: string
+      locations:
+        $ref: '#/definitions/models.BranchLocation'
+      opening_hours:
+        type: integer
+      updated_at:
+        type: string
+    required:
+    - branch_name
+    - opening_hours
+    type: object
+  models.BranchLocation:
+    properties:
+      branch_id:
+        type: string
+      distance:
+        type: number
+      id:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+    type: object
+  models.BranchMealPlan:
+    properties:
+      branch_id:
+        type: string
+      meal_plan_id:
+        type: string
+    required:
+    - branch_id
+    - meal_plan_id
+    type: object
+  models.MealPlan:
+    properties:
+      branch_meal_plans:
+        items:
+          $ref: '#/definitions/models.Branch'
+        type: array
+      created_at:
+        type: string
+      day:
+        type: string
+      deleted_at:
+        type: string
+      end_time:
+        type: string
+      id:
+        type: string
+      max_capacity:
+        type: integer
+      meal_plan_name:
+        type: string
+      price:
+        type: integer
+      start_time:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - day
+    - max_capacity
+    - meal_plan_name
+    - price
+    type: object
+  models.SwagBranch:
+    properties:
+      branch_name:
+        type: string
+      locations:
+        $ref: '#/definitions/models.SwagBranchLocation'
+      opening_hours:
+        type: integer
+    type: object
+  models.SwagBranchLocation:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+    type: object
+  models.SwagMealPlan:
+    properties:
+      day:
+        type: string
+      max_capacity:
+        type: integer
+      meal_plan_name:
+        type: string
+      price:
+        type: integer
+    type: object
+host: localhost:5000
+info:
+  contact:
+    email: iamaul@hotmail.com
+    name: iamaul
+    url: https://iamaul.me
+  description: Project Assignment Xcidic.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Fatbellies API
+  version: "1.0"
+paths:
+  /api/branches:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of branches
+      parameters:
+      - description: limit numbers
+        in: query
+        name: limit
+        type: integer
+      - description: pagination
+        in: query
+        name: page
+        type: integer
+      - description: created_at desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Branch'
+            type: array
+      summary: List branches
+      tags:
+      - Branches
+    post:
+      consumes:
+      - application/json
+      description: Add new branch
+      parameters:
+      - description: Form JSON
+        in: body
+        name: branch
+        required: true
+        schema:
+          $ref: '#/definitions/models.SwagBranch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Branch'
+            type: array
+      summary: Add branch
+      tags:
+      - Branches
+  /api/branches/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get branch by ID
+      parameters:
+      - description: Branch ID
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Branch'
+            type: array
+      summary: Find one of all the branches
+      tags:
+      - Branches
+  /api/branches/branch/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Get branch by Name
+      parameters:
+      - description: Branch name
+        in: path
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Branch'
+            type: array
+      summary: Find one of all the branches
+      tags:
+      - Branches
+  /api/branches/mealplans:
+    post:
+      consumes:
+      - application/json
+      description: Add new branch meal plan
+      parameters:
+      - description: Form JSON
+        in: body
+        name: branch_meal_plan
+        required: true
+        schema:
+          $ref: '#/definitions/models.BranchMealPlan'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.BranchMealPlan'
+            type: array
+      summary: Add branch meal plan
+      tags:
+      - Branches
+  /api/delete/branches/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete branch by ID
+      parameters:
+      - description: Branch ID
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Delete one of all the branches
+      tags:
+      - Branches
+  /api/delete/mealplans/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete meal plan by ID
+      parameters:
+      - description: Meal plan ID
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Delete one of all the meal plans
+      tags:
+      - Meal Plans
+  /api/mealplans:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of meal plans
+      parameters:
+      - description: limit numbers
+        in: query
+        name: limit
+        type: integer
+      - description: pagination
+        in: query
+        name: page
+        type: integer
+      - description: created_at desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.MealPlan'
+            type: array
+      summary: List meal plan
+      tags:
+      - Meal Plans
+    post:
+      consumes:
+      - application/json
+      description: Add new meal plan
+      parameters:
+      - description: Form JSON
+        in: body
+        name: meal_plan
+        required: true
+        schema:
+          $ref: '#/definitions/models.SwagMealPlan'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.MealPlan'
+            type: array
+      summary: Add meal plan
+      tags:
+      - Meal Plans
+  /api/mealplans/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get meal plan by ID
+      parameters:
+      - description: Meal Plan ID
+        in: path
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.MealPlan'
+            type: array
+      summary: Find one of all the meal plans
+      tags:
+      - Meal Plans
+  /api/mealplans/meal/{name}:
+    get:
+      consumes:
+      - application/json
+      description: Get meal plan by Name
+      parameters:
+      - description: Meal plan name
+        in: path
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.MealPlan'
+            type: array
+      summary: Find one of all the meal plans
+      tags:
+      - Meal Plans
+  /api/nearest/branches:
+    get:
+      consumes:
+      - application/json
+      description: Get nearest location between branch and user
+      parameters:
+      - description: Latitude
+        in: query
+        name: lat
+        type: string
+      - description: Longitude
+        in: query
+        name: long
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.BranchLocation'
+            type: array
+      summary: Find nearest location
+      tags:
+      - Branches
+  /api/search/branches:
+    post:
+      consumes:
+      - application/json
+      description: Search branch by specific queries column, q, and ID
+      parameters:
+      - description: branch_name
+        in: query
+        name: column
+        type: string
+      - description: restaurant
+        in: query
+        name: q
+        type: string
+      - description: created_at desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Branch'
+            type: array
+      summary: Search branches
+      tags:
+      - Branches
+  /api/search/mealplans:
+    post:
+      consumes:
+      - application/json
+      description: Search meal plan by specific queries column, q, and ID
+      parameters:
+      - description: meal_plan_name
+        in: query
+        name: column
+        type: string
+      - description: Buffet A
+        in: query
+        name: q
+        type: string
+      - description: created_at desc
+        in: query
+        name: order
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.MealPlan'
+            type: array
+      summary: Search meal plans
+      tags:
+      - Meal Plans
+  /api/update/branches/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update branch by ID
+      parameters:
+      - description: Branch ID
+        in: path
+        name: id
+        type: string
+      - description: Form JSON
+        in: body
+        name: branch
+        required: true
+        schema:
+          $ref: '#/definitions/models.SwagBranch'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Branch'
+            type: array
+      summary: Update branch
+      tags:
+      - Branches
+  /api/update/mealplans/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Update meal plan by ID
+      parameters:
+      - description: Meal plan ID
+        in: path
+        name: id
+        type: string
+      - description: Form JSON
+        in: body
+        name: meal_plan
+        required: true
+        schema:
+          $ref: '#/definitions/models.SwagMealPlan'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SwagMealPlan'
+            type: array
+      summary: Update meal plan
+      tags:
+      - Meal Plans
+swagger: "2.0"
