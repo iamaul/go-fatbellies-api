@@ -1,0 +1,89 @@
+version: "3.7"
+
+networks:
+  default:
+    external:
+      name: gateway
+
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    command:
+      - "--api.insecure=true" # not for production
+      - "--api.debug=true"
+      - "--log.level=DEBUG"
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=gateway"
+      - "--providers.file.directory=/etc/traefik/dynamic_conf"
+      - "--entrypoints.http.address=:80"
+      - "--entrypoints.https.address=:443"
+      - "--tracing=true"
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - ./config.toml:/etc/traefik/dynamic_conf/conf.toml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.iamaul.me`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=http"
+      - "traefik.http.routers.traefik.tls.certresolver=default"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https@docker"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+  api:
+    build:
+      context: ./fatbellies-api
+      dockerfile: Dockerfile
+    image: "iamaul/fatbellies-backend-api-services:latest"
+    container_name: fatbellies
+    restart: on-failure
+    networks:
+      - default
+    env_file: .env
+    volumes:
+      - ./.env:/fatbellies-api/.env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.tls=true"
+      - "traefik.http.routers.api.rule=Host(`fatbellies.iamaul.me`)"
+      - "traefik.http.routers.api.entrypoints=https"
+      - "traefik.http.routers.api.tls.certresolver=default"
+      - "traefik.http.services.api.loadbalancer.server.port=5000"
+
+  pgsql:
+    image: postgres:latest
+    container_name: postgresql
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "5442:5432"
+    volumes:
+      - pgsql-db:/var/lib/postgresql/data
+    networks:
+      - default
+
+  pgadmin4:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin4
+    env_file: .env
+    ports:
+      - "3030:80"
+    networks:
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pgadmin4.tls=true"
+      - "traefik.http.routers.pgadmin4.rule=Host(`db.iamaul.me`)"
+      - "traefik.http.routers.pgadmin4.entrypoints=https"
+      - "traefik.http.routers.pgadmin4.tls.certresolver=default"
+      - "traefik.http.services.pgadmin4.loadbalancer.server.port=9000"
