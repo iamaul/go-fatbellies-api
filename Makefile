@@ -28,7 +28,7 @@ lint:
 
 all: gateway-network
 	@echo [ starting api... ]
-	docker-compose up --build traefik api
+	docker-compose up --build traefik pgsql pgadmin4 api
 
 gateway-network:
 ifeq (,$(findstring gateway,$(NETWORKS)))

@@ -1,0 +1,60 @@
+version: "3.7"
+
+networks:
+  default:
+    external:
+      name: gateway
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: "iamaul/fatbellies-backend-api-services:latest"
+    container_name: fatbellies
+    restart: on-failure
+    networks:
+      - default
+    env_file: .env
+    depends_on:
+      - pgsql
+    ports:
+      - 3000:3000
+    volumes:
+      - ./.env:/app/.env
+
+  pgsql:
+    image: postgres:latest
+    container_name: postgresql
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "5442:5432"
+    volumes:
+      - pgsql-db:/var/lib/postgresql/data
+    networks:
+      - default
+
+  pgadmin4:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin4
+    env_file: .env
+    ports:
+      - 3030:80
+    networks:
+      - default
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    image: "iamaul/nginx:latest"
+    container_name: nginx
+    restart: unless-stopped
+    networks:
+      - default
+    ports:
+      - "80:80"
+
+volumes:
+  pgsql-db:
