@@ -105,7 +105,7 @@ definitions:
       price:
         type: integer
     type: object
-host: localhost:5000
+host: 52.77.204.112:3000
 info:
   contact:
     email: iamaul@hotmail.com

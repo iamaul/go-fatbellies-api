@@ -14,7 +14,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:5000",
+    "host": "52.77.204.112:3000",
     "paths": {
         "/api/branches": {
             "get": {

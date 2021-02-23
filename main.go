@@ -34,7 +34,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host http://52.77.204.112:3000
+// @host 52.77.204.112:3000
 
 func main() {
 	config := config.NewConfig()
